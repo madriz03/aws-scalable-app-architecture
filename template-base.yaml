@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >
+  This a empty template it will be use as a base
+
+Parameters:
+  VpcId:
+    Type: String
+  ImageId:
+    Type: String
+  KeyName:
+    Type: String
+  InstancesType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t3.micro
+    Description: You can choose between t2.micro and t3.micro if you don't specify anyone t2.micro will be a instance default
+
+Conditions:
+  MyLogicalID:  !Function
+    - !Ref parameter
+    - value to be evaluated according the parameter options
+
+    
+Outputs:
+  ConditionId:
+    Description: Some descripcion about what properties you are getting
+    Value:  You have to use a instrinsica function to get the properties
+
+Resources:
+  Logical ID of resource:
+    Type: Resource type
+    Properties:
+      Set of properties, each resorce could have specific properties
+
