@@ -6,6 +6,12 @@ Description: >
 Parameters:
   VpcIdParameter:
     Type: String
+  SubnetId1Parameter:
+    Type: AWS::EC2::Subnet::Id
+    Description: "us-east-2a (use2-az1)"
+  SubnetId2Parameter:
+    Type: AWS::EC2::Subnet::Id
+    Description: "us-east-2b (use2-az2)"
   ImageIdParameter:
     Type: String
   KeyNameParameter:
@@ -59,6 +65,24 @@ Resources:
           FromPort: 0
           ToPort: 0
           CidrIp: 0.0.0.0/0
+
+  AlbScableApp:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic: String
+      IpAddressType: ipv4
+      LoadBalancerAttributes: 
+        - LoadBalancerAttribute
+      Name: Alb-Scable-App
+      Scheme: internet-facing
+      SecurityGroups: 
+        - Ref: SecurityGroupHtpp
+      Subnets: 
+        - Ref: SubnetId1Parameter
+        - Ref: SubnetId2Parameter
+      Tags: 
+        - Tag
+      Type: String
         
       
          
