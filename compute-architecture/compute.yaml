@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >
+  This template will deploy compute component
+
+Parameters:
+  VpcIdParameter:
+    Type: String
+  ImageIdParameter:
+    Type: String
+  KeyNameParameter:
+    Type: String
+  InstanceTypesParameter:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t3.micro
+    Description: You can choose between t2.micro and t3.micro if you don't specify anyone t2.micro will be a instance default
+
+
+Resources:
+  SecurityGroupHtpp:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP connection from all origins
+      GroupName: SecurityGroupAlb
+      VpcId:
+        Ref: VpcIdParameter
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+
+  SecurityGroupHtppSsh:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SHH AND HTTP conection to ASG from All Origin, proximaly just from ALB
+      GroupName: SecurityGroupAsg
+      VpcId:
+        Ref: VpcIdParameter
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+        
+      
+         
+
+      
+
