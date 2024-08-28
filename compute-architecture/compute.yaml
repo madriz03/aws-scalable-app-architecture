@@ -6,6 +6,7 @@ Description: >
 Parameters:
   VpcIdParameter:
     Type: String
+  # This parameter displays the sub-networks enabled by aws in specific zones
   SubnetId1Parameter:
     Type: AWS::EC2::Subnet::Id
     Description: "us-east-2a (use2-az1)"
@@ -69,10 +70,7 @@ Resources:
   AlbScableApp:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic: String
       IpAddressType: ipv4
-      LoadBalancerAttributes: 
-        - LoadBalancerAttribute
       Name: Alb-Scable-App
       Scheme: internet-facing
       SecurityGroups: 
@@ -80,9 +78,34 @@ Resources:
       Subnets: 
         - Ref: SubnetId1Parameter
         - Ref: SubnetId2Parameter
-      Tags: 
-        - Tag
-      Type: String
+      Type: application
+
+  ListenerAlbScableApp:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn:
+        Ref: AlbScableApp
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: TargetGroupAlbScableApp
+
+  TargetGroupAlbScableApp:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: instance
+      Name: target-group-scable-app
+      Protocol: HTTP
+      Port: 80
+      ProtocolVersion: HTTP1
+      IpAddressType: ipv4
+      HealthCheckProtocol: HTTP
+      VpcId:
+        Ref: VpcIdParameter
+
+  
         
       
          
