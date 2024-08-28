@@ -83,10 +83,10 @@ Resources:
   ListenerAlbScableApp:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
-      LoadBalancerArn:
-        Ref: AlbScableApp
       Port: 80
       Protocol: HTTP
+      LoadBalancerArn:
+        Ref: AlbScableApp
       DefaultActions:
         - Type: forward
           TargetGroupArn:
@@ -101,7 +101,9 @@ Resources:
       Port: 80
       ProtocolVersion: HTTP1
       IpAddressType: ipv4
+      HealthCheckEnabled: true
       HealthCheckProtocol: HTTP
+      HealthCheckPort: 80
       VpcId:
         Ref: VpcIdParameter
 
