@@ -107,26 +107,62 @@ Resources:
       VpcId:
         Ref: VpcIdParameter
 
- RoleAsg:
-  Type: AWS::IAM::Role
-  Properties:
-    RoleName: AsgRoleS3
-    AssumeRolePolicyDocument:
-      Version: '2012-10-17'
-      Statement:
-        - Effect: 'Allow'
-          Principal:
-            Service:
-              - 'ec2.amazonaws.com'
-          Action:
-            - 'sts:AssumeRole'
-    # Uso de política administrada
-    ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      - arn:aws:iam::aws:policy/CloudWatchFullAccess
+  RoleAsg:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: AsgRoleS3
+      # Uso de política administrada
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'ec2.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
 
-        
-      
+  InstanceProfile:
+      Type: AWS::IAM::InstanceProfile
+      Properties:
+        Path: '/'
+        Roles:
+        - Ref: RoleAsg
+
+  LaunchTemplateScableApp:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      # Nommbre dinamico parcial
+      LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
+      LaunchTemplateData:
+        ImageId:
+          Ref: ImageIdParameter
+        InstanceType:
+          Ref: InstanceTypesParameter
+        KeyName:
+          Ref: KeyNameParameter
+        SecurityGroupIds:
+          - Ref: SecurityGroupHtppSsh
+        IamInstanceProfile:
+          Name:
+            Ref: InstanceProfile
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            yum update -y
+            yum install -y httpd
+            systemctl start httpd
+            systemctl enable httpd
+            yum install -y aws-cli
+            echo "Hola Mundo" > /var/www/html/index.html
+            systemctl restart httpd
+
+     
+
+
          
 
       
