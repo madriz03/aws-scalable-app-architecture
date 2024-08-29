@@ -107,7 +107,24 @@ Resources:
       VpcId:
         Ref: VpcIdParameter
 
-  
+ RoleAsg:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: AsgRoleS3
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: 'Allow'
+          Principal:
+            Service:
+              - 'ec2.amazonaws.com'
+          Action:
+            - 'sts:AssumeRole'
+    # Uso de política administrada
+    ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      - arn:aws:iam::aws:policy/CloudWatchFullAccess
+
         
       
          
