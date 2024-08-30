@@ -115,7 +115,9 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/CloudWatchFullAccess
+      # De tener alguna politica personalizada se establece en la propiedad policies
       AssumeRolePolicyDocument:
+      # Se establece que recurso asumira el rol
         Version: '2012-10-17'
         Statement:
           - Effect: 'Allow'
@@ -130,6 +132,7 @@ Resources:
       Properties:
         Path: '/'
         Roles:
+        # Es el instance profile que hace referencia al rol
         - Ref: RoleAsg
 
   LaunchTemplateScableApp:
@@ -147,9 +150,11 @@ Resources:
         SecurityGroupIds:
           - Ref: SecurityGroupHtppSsh
         IamInstanceProfile:
+          # En el launch template es donde se hace referencia al instance profile
           Name:
             Ref: InstanceProfile
         UserData:
+          # Es necesario pasar el script a la funcion base64 para que haga la conversion y cloudformation pueda leer dicho script
           Fn::Base64: !Sub |
             #!/bin/bash
             yum update -y
@@ -161,6 +166,30 @@ Resources:
             systemctl restart httpd
 
      
+  AsgScableApp:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub ${AWS::StackName}-asg
+      AvailabilityZones: 
+        - us-east-2a
+        - us-east-2b
+      Cooldown: 300
+      DesiredCapacity: 2
+      MinSize: 1
+      MaxSize: 3
+      HealthCheckGracePeriod: 300
+      HealthCheckType: ELB
+      LaunchTemplate: 
+        LaunchTemplateId:
+          Ref:  LaunchTemplateScableApp
+        Version: !GetAtt LaunchTemplateScableApp.LatestVersionNumber
+      MetricsCollection: 
+        - Granularity: '1Minute' # Cada 1 minuto se enviaran metricas
+          Metrics: [] # Incluir todas las metricas
+    # NotificationConfigurations: 
+       # - NotificationConfiguration
+      TargetGroupARNs: 
+        - Ref: TargetGroupAlbScableApp
 
 
          
