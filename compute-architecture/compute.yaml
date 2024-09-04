@@ -17,6 +17,8 @@ Parameters:
     Type: String
   KeyNameParameter:
     Type: String
+  SubsParameter:
+    Type: String
   InstanceTypesParameter:
     Type: String
     Default: t2.micro
@@ -186,13 +188,28 @@ Resources:
       MetricsCollection: 
         - Granularity: '1Minute' # Cada 1 minuto se enviaran metricas
           Metrics: [] # Incluir todas las metricas
-    # NotificationConfigurations: 
-       # - NotificationConfiguration
+      NotificationConfigurations:
+        - TopicARN: !Ref MySNSTopic
+          NotificationTypes:
+            - autoscaling:EC2_INSTANCE_LAUNCH
+            - autoscaling:EC2_INSTANCE_TERMINATE
+
       TargetGroupARNs: 
         - Ref: TargetGroupAlbScableApp
 
 
-         
-
+  
+  MySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "Asg-event"
       
 
+  EmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: 
+        Ref: MySNSTopic
+      Protocol: email
+      Endpoint:
+        Ref: SubsParameter

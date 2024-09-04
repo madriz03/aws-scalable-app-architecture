@@ -1,0 +1,19 @@
+Parameters:
+  SubsParameter:
+    Type: String
+
+Resources:
+  MySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "Asg-event"
+
+  EmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: 
+        Ref: MySNSTopic
+      Protocol: email
+      Endpoint:
+        Ref: SubsParameter
+    
