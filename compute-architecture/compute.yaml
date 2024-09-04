@@ -213,3 +213,25 @@ Resources:
       Protocol: email
       Endpoint:
         Ref: SubsParameter
+
+  MyAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'Alarma para monitorizar si alguna istancia del ASG esta en estado terminada'
+      MetricName: 'GroupTerminatingInstances'
+      Namespace: 'AWS/AutoScaling'
+      Statistic: 'Average'
+      Period: 120
+      EvaluationPeriods: 1
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold'
+      Threshold: 1
+      AlarmActions:
+        - Ref: MySNSTopic # Deteccion de problema
+      OKActions:
+        - Ref: MySNSTopic # Problema resuelto
+      Dimensions:
+        - Name: 'AutoScalingGroupName' # De donde proviene la metrica
+          Value:
+            Ref: AsgScableApp # Nombre del recurso especifico de donde proviene la metrica
+            
+
