@@ -1,3 +1,5 @@
+# This template will be used as a nested template at the future
+
 Parameters:
   SubsParameter:
     Type: String
@@ -7,6 +9,7 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: "Asg-event"
+      
 
   EmailSubscription:
     Type: AWS::SNS::Subscription
@@ -16,4 +19,24 @@ Resources:
       Protocol: email
       Endpoint:
         Ref: SubsParameter
+
+  MyAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'Alarma para monitorizar si alguna istancia del ASG esta en estado terminada'
+      MetricName: 'GroupTerminatingInstances'
+      Namespace: 'AWS/AutoScaling'
+      Statistic: 'Average'
+      Period: 120
+      EvaluationPeriods: 1
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold'
+      Threshold: 1
+      AlarmActions:
+        - Ref: MySNSTopic # Deteccion de problema
+      OKActions:
+        - Ref: MySNSTopic # Problema resuelto
+      Dimensions:
+        - Name: 'AutoScalingGroupName' # De que recurso proviene la metrica
+          Value:
+            Ref: AsgScableApp # Informacion  del recurso especifico de donde proviene la metrica
     

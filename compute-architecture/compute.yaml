@@ -113,13 +113,13 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: AsgRoleS3
-      # Uso de política administrada
+      # Use of managed policies
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/CloudWatchFullAccess
-      # De tener alguna politica personalizada se establece en la propiedad policies
+      # If you have a customized policy, it is stated in the property policies.
       AssumeRolePolicyDocument:
-      # Se establece que recurso asumira el rol
+      # It is established which resource will assume the role of
         Version: '2012-10-17'
         Statement:
           - Effect: 'Allow'
@@ -134,13 +134,13 @@ Resources:
       Properties:
         Path: '/'
         Roles:
-        # Es el instance profile que hace referencia al rol
+        # In the Instance Profile is where the Role is referred to
         - Ref: RoleAsg
 
   LaunchTemplateScableApp:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      # Nommbre dinamico parcial
+      # Dinamic name
       LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
       LaunchTemplateData:
         ImageId:
@@ -152,11 +152,11 @@ Resources:
         SecurityGroupIds:
           - Ref: SecurityGroupHtppSsh
         IamInstanceProfile:
-          # En el launch template es donde se hace referencia al instance profile
+          # In the launch template is where the instance profile is referred to.
           Name:
             Ref: InstanceProfile
         UserData:
-          # Es necesario pasar el script a la funcion base64 para que haga la conversion y cloudformation pueda leer dicho script
+          # It is necessary to pass the script to the base64 function to make the conversion and cloudformation can read the script.
           Fn::Base64: !Sub |
             #!/bin/bash
             yum update -y
@@ -186,8 +186,8 @@ Resources:
           Ref:  LaunchTemplateScableApp
         Version: !GetAtt LaunchTemplateScableApp.LatestVersionNumber
       MetricsCollection: 
-        - Granularity: '1Minute' # Cada 1 minuto se enviaran metricas
-          Metrics: [] # Incluir todas las metricas
+        - Granularity: '1Minute' # Metrics will be send every minute
+          Metrics: [] # Include all metrics
       NotificationConfigurations:
         - TopicARN: !Ref MySNSTopic
           NotificationTypes:
@@ -226,12 +226,12 @@ Resources:
       ComparisonOperator: 'GreaterThanOrEqualToThreshold'
       Threshold: 1
       AlarmActions:
-        - Ref: MySNSTopic # Deteccion de problema
+        - Ref: MySNSTopic 
       OKActions:
-        - Ref: MySNSTopic # Problema resuelto
+        - Ref: MySNSTopic 
       Dimensions:
-        - Name: 'AutoScalingGroupName' # De donde proviene la metrica
+        - Name: 'AutoScalingGroupName' 
           Value:
-            Ref: AsgScableApp # Nombre del recurso especifico de donde proviene la metrica
+            Ref: AsgScableApp 
             
 
