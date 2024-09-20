@@ -74,3 +74,5 @@ Si no tienes experiencia con CloudFormation y prefieres hacerlo desde la consola
 Si quieres ponerte en contacto conmigo para colaborar en un proyecto o te parece importante que sea parte de tus conexiones profesionales, puedes enviarme una invitacion  a través de mi perfil de LinkedIn:
 
 [Mi perfil de Linkedin](https://www.linkedin.com/in/javier-madriz/ "Mi perfil de Linkedin")
+
+Hasta la proxima.
